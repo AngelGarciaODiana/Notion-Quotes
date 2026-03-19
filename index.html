@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soka Global Quotes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Georgia', serif;
+      padding: 20px;
+    }
+
+    .widget {
+      max-width: 680px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .lotus-icon {
+      font-size: 2.4rem;
+      margin-bottom: 18px;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(230, 160, 80, 0.6));
+    }
+
+    .quote-card {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 40px 44px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      position: relative;
+    }
+
+    .quote-mark {
+      font-size: 5rem;
+      color: rgba(230, 160, 80, 0.35);
+      line-height: 1;
+      position: absolute;
+      top: 16px;
+      left: 28px;
+      font-family: 'Georgia', serif;
+      user-select: none;
+    }
+
+    .quote-text {
+      font-size: 1.18rem;
+      line-height: 1.75;
+      color: #e8e8f0;
+      font-style: italic;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .divider {
+      width: 50px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #e6a050, transparent);
+      margin: 0 auto 18px;
+    }
+
+    .quote-author {
+      font-size: 0.92rem;
+      color: #e6a050;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-style: normal;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .controls {
+      margin-top: 28px;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn {
+      background: rgba(230, 160, 80, 0.15);
+      border: 1px solid rgba(230, 160, 80, 0.5);
+      color: #e6a050;
+      padding: 10px 26px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      letter-spacing: 0.08em;
+      transition: background 0.25s, transform 0.15s;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .btn:hover {
+      background: rgba(230, 160, 80, 0.28);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .counter {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.35);
+      font-family: 'Arial', sans-serif;
+    }
+
+    .brand {
+      margin-top: 22px;
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.1em;
+      font-family: 'Arial', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <span class="lotus-icon">🪷</span>
+    <div class="quote-card">
+      <span class="quote-mark">&ldquo;</span>
+      <p class="quote-text" id="quote-text"></p>
+      <div class="divider"></div>
+      <p class="quote-author" id="quote-author"></p>
+    </div>
+    <div class="controls">
+      <button class="btn" id="prev-btn" onclick="prevQuote()">&#8592; Previous</button>
+      <span class="counter" id="counter"></span>
+      <button class="btn" id="next-btn" onclick="nextQuote()">Next &#8594;</button>
+    </div>
+    <p class="brand">Soka Global Quotes &mdash; Notion Widget</p>
+  </div>
+
+  <script src="quotes.js"></script>
+  <script>
+    // currentIndex is intentionally mutable; updated by prevQuote/nextQuote
+    let currentIndex = Math.floor(Math.random() * quotes.length);
+
+    function renderQuote() {
+      const q = quotes[currentIndex];
+      const textEl = document.getElementById('quote-text');
+      const authorEl = document.getElementById('quote-author');
+      const counterEl = document.getElementById('counter');
+
+      // Fade out
+      textEl.style.transition = 'opacity 0.3s';
+      authorEl.style.transition = 'opacity 0.3s';
+      textEl.style.opacity = '0';
+      authorEl.style.opacity = '0';
+
+      setTimeout(() => {
+        textEl.textContent = q.text;
+        authorEl.textContent = '\u2014 ' + q.author;
+        counterEl.textContent = (currentIndex + 1) + ' / ' + quotes.length;
+
+        textEl.style.opacity = '1';
+        authorEl.style.opacity = '1';
+      }, 300);
+    }
+
+    function nextQuote() {
+      currentIndex = (currentIndex + 1) % quotes.length;
+      renderQuote();
+    }
+
+    function prevQuote() {
+      currentIndex = (currentIndex - 1 + quotes.length) % quotes.length;
+      renderQuote();
+    }
+
+    // Keyboard navigation (prevent default scrolling on arrow keys)
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextQuote(); }
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); prevQuote(); }
+    });
+
+    renderQuote();
+  </script>
+</body>
+</html>
