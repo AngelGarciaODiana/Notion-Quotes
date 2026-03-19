@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Quote Widget</title>
+    <title>Soka Global Quotes</title>
     <style>
-        /* CSS: Modern, sober, and minimalist aesthetic */
+        /* Dark, elegant design optimised for Notion embeds */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -13,121 +17,201 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Fallback pastel background in case of network image failure */
-            background-color: #F4EFEB; 
+            background-color: #1a1a2e;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
-            transition: background-image 0.5s ease-in-out;
         }
-        
-        /* Overlay layer to soften the background image and maintain a pastel aesthetic */
+
+        /* Dark overlay to keep text readable over background images */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(244, 239, 235, 0.45); /* Translucent pastel stone */
+            background-color: rgba(10, 10, 30, 0.65);
             z-index: 1;
         }
 
-        /* Container with frosted glass effect for optimal typographic contrast */
+        /* Central card with dark frosted-glass effect */
         .quote-container {
             position: relative;
             z-index: 2;
-            max-width: 85%;
-            padding: 2.5rem;
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            max-width: 680px;
+            width: 90%;
+            padding: 2.8rem 3rem;
+            background-color: rgba(20, 20, 40, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             text-align: center;
-            color: #2C3E50;
+            color: #e8e0d5;
+        }
+
+        /* Quote text with smooth fade transition */
+        .quote-body {
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .quote-body.fade-out {
+            opacity: 0;
         }
 
         .quote-text {
-            font-size: 1.4rem;
-            font-weight: 400;
-            line-height: 1.6;
-            margin-bottom: 1.2rem;
+            font-size: 1.35rem;
+            font-weight: 300;
+            line-height: 1.75;
+            margin-bottom: 1.4rem;
+            color: #f0ebe4;
+            font-style: italic;
         }
 
         .quote-author {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #34495E;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #c9a96e;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 0.3rem;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.35rem;
         }
 
         .quote-material {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-style: italic;
-            color: #7F8C8D;
+            color: #8a8a9a;
+            margin-bottom: 1.8rem;
+        }
+
+        /* Navigation buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #e8e0d5;
+            padding: 0.5rem 1.4rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            user-select: none;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.96);
         }
 
         .error-message {
-            color: #E74C3C;
+            color: #e07070;
             font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
-    <div class="quote-container" id="quote-content">
-        Loading data...
+    <div class="quote-container">
+        <div class="quote-body" id="quote-body">
+            <div class="quote-text" id="quote-text">Loading…</div>
+            <div class="quote-author" id="quote-author"></div>
+            <div class="quote-material" id="quote-material"></div>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="btn-prev" aria-label="Previous quote">← Prev</button>
+            <button class="nav-btn" id="btn-next" aria-label="Next quote">Next →</button>
+        </div>
     </div>
 
     <script>
-        // Asynchronous function to retrieve data and update the DOM and CSS
-        async function fetchAndRenderQuote() {
+        let quotesData = [];
+        let currentIndex = 0;
+
+        // Render the quote at currentIndex with a smooth fade transition
+        function renderQuote() {
+            const body = document.getElementById('quote-body');
+            body.classList.add('fade-out');
+
+            setTimeout(() => {
+                const q = quotesData[currentIndex];
+                document.getElementById('quote-text').textContent = '\u201C' + q.quote + '\u201D';
+                document.getElementById('quote-author').textContent = '— ' + q.author;
+                document.getElementById('quote-material').textContent = q.material || '';
+
+                if (q.image_url) {
+                    document.body.style.backgroundImage = "url('" + q.image_url + "')";
+                } else {
+                    document.body.style.backgroundImage = 'none';
+                }
+
+                body.classList.remove('fade-out');
+            }, 400);
+        }
+
+        function showPrev() {
+            currentIndex = (currentIndex - 1 + quotesData.length) % quotesData.length;
+            renderQuote();
+        }
+
+        function showNext() {
+            currentIndex = (currentIndex + 1) % quotesData.length;
+            renderQuote();
+        }
+
+        // Keyboard navigation (← / → arrow keys)
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowLeft') showPrev();
+            if (e.key === 'ArrowRight') showNext();
+        });
+
+        document.getElementById('btn-prev').addEventListener('click', showPrev);
+        document.getElementById('btn-next').addEventListener('click', showNext);
+
+        // Build the date_reference string for a given Date (e.g. "march-19")
+        function todayDateReference(date) {
+            const months = [
+                'january', 'february', 'march', 'april', 'may', 'june',
+                'july', 'august', 'september', 'october', 'november', 'december'
+            ];
+            return months[date.getMonth()] + '-' + date.getDate();
+        }
+
+        // Fetch quotes and start on today's quote
+        async function init() {
             try {
-                // Fetch the structured JSON file
                 const response = await fetch('quotes.json');
-                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error('HTTP error! status: ' + response.status);
                 }
-                
-                const quotesData = await response.json();
-                
-                // Calculate chronological index
-                const currentDate = new Date();
-                const startOfYear = new Date(currentDate.getFullYear(), 0, 0);
-                const timeDifference = currentDate - startOfYear;
-                const millisecondsPerDay = 1000 * 60 * 60 * 24;
-                const dayOfYear = Math.floor(timeDifference / millisecondsPerDay);
+                quotesData = await response.json();
 
-                // Isolate the specific object for today's date
-                const targetIndex = dayOfYear % quotesData.length;
-                const selectedQuote = quotesData[targetIndex];
-
-                // Dynamically assign the extracted image URL to the CSS background property
-                if (selectedQuote.image_url) {
-                    document.body.style.backgroundImage = `url('${selectedQuote.image_url}')`;
-                }
-
-                // Inject the text components into the layout
-                const container = document.getElementById('quote-content');
-                container.innerHTML = `
-                    <div class="quote-text">"${selectedQuote.quote}"</div>
-                    <div class="quote-author">— ${selectedQuote.author}</div>
-                    <div class="quote-material">${selectedQuote.material}</div>
-                `;
+                // Find the quote whose date_reference matches today
+                const ref = todayDateReference(new Date());
+                const todayIndex = quotesData.findIndex(function (q) {
+                    return q.date_reference === ref;
+                });
+                currentIndex = todayIndex !== -1 ? todayIndex : 0;
+                renderQuote();
             } catch (error) {
-                console.error("Data retrieval failed:", error);
-                document.getElementById('quote-content').innerHTML = 
-                    `<span class="error-message">Unable to load the dataset. Please verify the network connection and JSON syntax.</span>`;
+                console.error('Data retrieval failed:', error);
+                document.getElementById('quote-body').innerHTML =
+                    '<span class="error-message">Unable to load quotes. Please verify the network connection and JSON syntax.</span>';
             }
         }
 
-        // Initialize script upon full page load
-        window.onload = fetchAndRenderQuote;
+        window.onload = init;
     </script>
 </body>
 </html>
