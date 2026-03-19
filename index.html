@@ -1,198 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soka Global Quotes</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Quote Widget</title>
+    <style>
+        /* CSS: Modern, sober, and minimalist aesthetic */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Fallback pastel background in case of network image failure */
+            background-color: #F4EFEB; 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            transition: background-image 0.5s ease-in-out;
+        }
+        
+        /* Overlay layer to soften the background image and maintain a pastel aesthetic */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(244, 239, 235, 0.45); /* Translucent pastel stone */
+            z-index: 1;
+        }
 
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      font-family: 'Georgia', serif;
-      padding: 20px;
-    }
+        /* Container with frosted glass effect for optimal typographic contrast */
+        .quote-container {
+            position: relative;
+            z-index: 2;
+            max-width: 85%;
+            padding: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            text-align: center;
+            color: #2C3E50;
+        }
 
-    .widget {
-      max-width: 680px;
-      width: 100%;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in-out;
-    }
+        .quote-text {
+            font-size: 1.4rem;
+            font-weight: 400;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+        .quote-author {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #34495E;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.3rem;
+        }
 
-    .lotus-icon {
-      font-size: 2.4rem;
-      margin-bottom: 18px;
-      display: block;
-      filter: drop-shadow(0 0 8px rgba(230, 160, 80, 0.6));
-    }
+        .quote-material {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #7F8C8D;
+        }
 
-    .quote-card {
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      padding: 40px 44px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-      position: relative;
-    }
-
-    .quote-mark {
-      font-size: 5rem;
-      color: rgba(230, 160, 80, 0.35);
-      line-height: 1;
-      position: absolute;
-      top: 16px;
-      left: 28px;
-      font-family: 'Georgia', serif;
-      user-select: none;
-    }
-
-    .quote-text {
-      font-size: 1.18rem;
-      line-height: 1.75;
-      color: #e8e8f0;
-      font-style: italic;
-      margin-bottom: 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .divider {
-      width: 50px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #e6a050, transparent);
-      margin: 0 auto 18px;
-    }
-
-    .quote-author {
-      font-size: 0.92rem;
-      color: #e6a050;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      font-style: normal;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .controls {
-      margin-top: 28px;
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .btn {
-      background: rgba(230, 160, 80, 0.15);
-      border: 1px solid rgba(230, 160, 80, 0.5);
-      color: #e6a050;
-      padding: 10px 26px;
-      border-radius: 30px;
-      cursor: pointer;
-      font-size: 0.88rem;
-      letter-spacing: 0.08em;
-      transition: background 0.25s, transform 0.15s;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .btn:hover {
-      background: rgba(230, 160, 80, 0.28);
-      transform: translateY(-1px);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .counter {
-      font-size: 0.78rem;
-      color: rgba(255, 255, 255, 0.35);
-      font-family: 'Arial', sans-serif;
-    }
-
-    .brand {
-      margin-top: 22px;
-      font-size: 0.72rem;
-      color: rgba(255, 255, 255, 0.25);
-      letter-spacing: 0.1em;
-      font-family: 'Arial', sans-serif;
-    }
-  </style>
+        .error-message {
+            color: #E74C3C;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-  <div class="widget">
-    <span class="lotus-icon">🪷</span>
-    <div class="quote-card">
-      <span class="quote-mark">&ldquo;</span>
-      <p class="quote-text" id="quote-text"></p>
-      <div class="divider"></div>
-      <p class="quote-author" id="quote-author"></p>
+    <div class="overlay"></div>
+    <div class="quote-container" id="quote-content">
+        Loading data...
     </div>
-    <div class="controls">
-      <button class="btn" id="prev-btn" onclick="prevQuote()">&#8592; Previous</button>
-      <span class="counter" id="counter"></span>
-      <button class="btn" id="next-btn" onclick="nextQuote()">Next &#8594;</button>
-    </div>
-    <p class="brand">Soka Global Quotes &mdash; Notion Widget</p>
-  </div>
 
-  <script src="quotes.js"></script>
-  <script>
-    // currentIndex is intentionally mutable; updated by prevQuote/nextQuote
-    let currentIndex = Math.floor(Math.random() * quotes.length);
+    <script>
+        // Asynchronous function to retrieve data and update the DOM and CSS
+        async function fetchAndRenderQuote() {
+            try {
+                // Fetch the structured JSON file
+                const response = await fetch('quotes.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const quotesData = await response.json();
+                
+                // Calculate chronological index
+                const currentDate = new Date();
+                const startOfYear = new Date(currentDate.getFullYear(), 0, 0);
+                const timeDifference = currentDate - startOfYear;
+                const millisecondsPerDay = 1000 * 60 * 60 * 24;
+                const dayOfYear = Math.floor(timeDifference / millisecondsPerDay);
 
-    function renderQuote() {
-      const q = quotes[currentIndex];
-      const textEl = document.getElementById('quote-text');
-      const authorEl = document.getElementById('quote-author');
-      const counterEl = document.getElementById('counter');
+                // Isolate the specific object for today's date
+                const targetIndex = dayOfYear % quotesData.length;
+                const selectedQuote = quotesData[targetIndex];
 
-      // Fade out
-      textEl.style.transition = 'opacity 0.3s';
-      authorEl.style.transition = 'opacity 0.3s';
-      textEl.style.opacity = '0';
-      authorEl.style.opacity = '0';
+                // Dynamically assign the extracted image URL to the CSS background property
+                if (selectedQuote.image_url) {
+                    document.body.style.backgroundImage = `url('${selectedQuote.image_url}')`;
+                }
 
-      setTimeout(() => {
-        textEl.textContent = q.text;
-        authorEl.textContent = '\u2014 ' + q.author;
-        counterEl.textContent = (currentIndex + 1) + ' / ' + quotes.length;
+                // Inject the text components into the layout
+                const container = document.getElementById('quote-content');
+                container.innerHTML = `
+                    <div class="quote-text">"${selectedQuote.quote}"</div>
+                    <div class="quote-author">— ${selectedQuote.author}</div>
+                    <div class="quote-material">${selectedQuote.material}</div>
+                `;
+            } catch (error) {
+                console.error("Data retrieval failed:", error);
+                document.getElementById('quote-content').innerHTML = 
+                    `<span class="error-message">Unable to load the dataset. Please verify the network connection and JSON syntax.</span>`;
+            }
+        }
 
-        textEl.style.opacity = '1';
-        authorEl.style.opacity = '1';
-      }, 300);
-    }
-
-    function nextQuote() {
-      currentIndex = (currentIndex + 1) % quotes.length;
-      renderQuote();
-    }
-
-    function prevQuote() {
-      currentIndex = (currentIndex - 1 + quotes.length) % quotes.length;
-      renderQuote();
-    }
-
-    // Keyboard navigation (prevent default scrolling on arrow keys)
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextQuote(); }
-      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); prevQuote(); }
-    });
-
-    renderQuote();
-  </script>
+        // Initialize script upon full page load
+        window.onload = fetchAndRenderQuote;
+    </script>
 </body>
 </html>
