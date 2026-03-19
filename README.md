@@ -23,15 +23,6 @@ A beautiful Notion widget that displays inspirational **Soka Global quotes** fro
 - Smooth fade transitions between quotes
 - Dark, elegant design optimised for Notion embeds
 
-## Deployment
-
-The widget is automatically deployed to **GitHub Pages** on every push to `main` via the included workflow (`.github/workflows/deploy.yml`).
-
-To enable GitHub Pages in your fork:
-1. Go to **Settings → Pages**.
-2. Under **Source**, select **GitHub Actions**.
-3. Push to `main` — the action handles the rest.
-
 ## Quote Sources
 
 - **Daisaku Ikeda** — Third president of Soka Gakkai International
