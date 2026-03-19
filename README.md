@@ -5,7 +5,7 @@ A beautiful Notion widget that displays inspirational **Soka Global quotes** fro
 ## Live Widget
 
 > Once deployed, the widget is available at:  
-> `https://<your-github-username>.github.io/Notion-Quotes/`
+> `https://angelgarciaodiana.github.io/Notion-Quotes/`
 
 ## Embed in Notion
 
