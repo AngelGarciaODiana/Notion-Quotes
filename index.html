@@ -33,7 +33,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            min-height: 100dvh;
+            min-height: max(100vh, 100dvh);
             background-color: #0d1117;
             background-size: cover;
             background-position: center;
@@ -97,6 +97,9 @@
         .date-icon {
             width: clamp(11px, 2vmin, 14px);
             height: clamp(11px, 2vmin, 14px);
+            opacity: 0.6;
+            vertical-align: middle;
+            color: #c9a96e;
         }
 
         /* Quote body area */
@@ -235,7 +238,7 @@
     <div class="quote-container">
 
         <div class="date-bar">
-            <svg class="date-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;vertical-align:middle;color:#c9a96e">
+            <svg class="date-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
                 <line x1="8" y1="2" x2="8" y2="6"></line>
